@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle Semanal de Estoque</title>
+  <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4361ee">
+    <link rel="icon" href="icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-hover: #3a56d4;
+      --danger: #ef233c;
+      --danger-hover: #d90429;
+      --success: #2ecc71;
+      --success-hover: #27ae60;
+      --warning: #f39c12;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --gray-light: #e9ecef;
+      --border: #dee2e6;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --radius-sm: 4px;
+      --transition: all 0.2s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background-color: #f5f7fb;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1, h2, h3, h4 {
+      color: var(--dark);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 0.5rem;
+      display: inline-block;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    h3 {
+      font-size: 1.25rem;
+    }
+
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
+      border: 1px solid var(--border);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    input, select, button, textarea {
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+    }
+
+    input[type="number"], input[type="text"], input[type="date"], select {
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .input-row .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: var(--danger-hover);
+    }
+
+    .btn-success {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: var(--success-hover);
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      box-shadow: 0 0 0 1px var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background-color: var(--primary);
+      color: white;
+      font-weight: 500;
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    tr:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .edit-cell {
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .edit-cell:hover {
+      background-color: rgba(67, 97, 238, 0.1);
+    }
+
+    .edit-cell:focus {
+      outline: none;
+      background-color: white;
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: 0.25rem;
+    }
+
+    .badge-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .badge-success {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .badge-warning {
+      background-color: var(--warning);
+      color: white;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tab {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: var(--transition);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      border-bottom-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .tab:hover:not(.active) {
+      border-bottom-color: var(--gray);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .stat-card h3 {
+      font-size: 1rem;
+      color: var(--gray);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card p {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .file-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: var(--light);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .file-label:hover {
+      background-color: var(--gray-light);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+
+      .input-row {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .input-row .form-group {
+        min-width: 100%;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+      }
+
+      td {
+        border: none;
+        border-bottom: 1px solid var(--border);
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+      }
+
+      td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0.75rem;
+        width: calc(50% - 0.75rem);
+        padding-right: 0.5rem;
+        font-weight: 500;
+        text-align: left;
+        color: var(--gray);
+      }
+
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .input-group {
+        width: 100%;
+      }
+
+      .input-group button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 576px) {
+      body {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+      }
+
+      .card {
+        padding: 1rem;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 5px;
+      }
+
+      .tab {
+        flex: 0 0 auto;
+        padding: 0.75rem;
+      }
+
+      input[type="number"], 
+      input[type="text"], 
+      input[type="date"], 
+      select {
+        max-width: 100%;
+      }
+    }
+
+    /* Estilo para impressão */
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+        font-size: 12pt;
+      }
+
+      .container {
+        max-width: 100%;
+      }
+
+      .card {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin-bottom: 1cm;
+        page-break-inside: avoid;
+      }
+
+      .tabs, .tab, .btn, .file-label {
+        display: none !important;
+      }
+
+      .tab-content {
+        display: block !important;
+      }
+
+      table {
+        font-size: 10pt;
+      }
+
+      h1, h2, h3 {
+        page-break-after: avoid;
+      }
+
+      @page {
+        size: A4;
+        margin: 2cm;
+      }
+    }
+
+    /* Adicionando estilo específico para os botões de ação */
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    @media (max-width: 768px) {
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Controle Semanal de Estoque</h1>
+
+    <div class="tabs">
+      <div class="tab active" onclick="openTab('cadastro')">Cadastrar Produto</div>
+      <div class="tab" onclick="openTab('registro')">Registrar Estoque</div>
+      <div class="tab" onclick="openTab('relatorio')">Relatórios</div>
+      <div class="tab" onclick="openTab('gerenciar')">Gerenciar Produtos</div>
+      <div class="tab" onclick="openTab('backup')">Backup</div>
+    </div>
+
+    <div id="cadastro" class="tab-content active">
+      <div class="card">
+        <h2>Cadastrar Novo Produto</h2>
+        <div class="input-row">
+          <div class="form-group">
+            <label for="produtoNome">Nome do Produto</label>
+            <input type="text" id="produtoNome" placeholder="Ex: Arroz 5kg" />
+          </div>
+          <div class="form-group">
+            <label for="produtoPrecoCompra">Preço de Compra (R$)</label>
+            <input type="number" id="produtoPrecoCompra" placeholder="0.00" step="0.01" min="0" />
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="form-group">
+            <label for="produtoPrecoVenda">Preço de Venda (R$)</label>
+            <input type="number" id="produtoPrecoVenda" placeholder="0.00" step="0.01" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="produtoQtdInicial">Quantidade Inicial</label>
+            <input type="number" id="produtoQtdInicial" placeholder="0" min="0" />
+          </div>
+        </div>
+        <button class="btn-primary" onclick="cadastrarProduto()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+          </svg>
+          Cadastrar Produto
+        </button>
+      </div>
+    </div>
+
+    <div id="registro" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2>Registrar Estoque da Semana</h2>
+          <div class="input-group">
+            <div class="form-group">
+              <select id="selectSemana"></select>
+            </div>
+            <button class="btn-primary" onclick="adicionarSemana()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+              </svg>
+              Nova Semana
+            </button>
+            <button class="btn-danger" onclick="removerSemana()" title="Remover semana selecionada">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+              </svg>
+              Remover Semana
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table id="estoqueSemanaTable">
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Quantidade Encontrada</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div id="alertaVariacao" class="alert alert-warning" style="display:none;"></div>
+        
+        <button class="btn-primary" onclick="salvarEstoqueSemana()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/>
+          </svg>
+          Salvar Estoque
+        </button>
+      </div>
+    </div>
+
+    <div id="relatorio" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2>Relatório Semanal</h2>
+          <button class="btn-primary" onclick="imprimirRelatorio()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
+              <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+            </svg>
+            Imprimir
+          </button>
+        </div>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label for="filtroProduto">Filtrar por Produto</label>
+            <input type="text" id="filtroProduto" placeholder="Digite o nome do produto..." oninput="gerarRelatorio()" />
+          </div>
+          <div class="form-group">
+            <label for="filtroSemana">Filtrar por Semana</label>
+            <select id="filtroSemana" onchange="gerarRelatorio()">
+              <option value="todas">Todas as Semanas</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="filtroDataInicio">Data Início</label>
+            <input type="date" id="filtroDataInicio" onchange="gerarRelatorio()" />
+          </div>
+          <div class="form-group">
+            <label for="filtroDataFim">Data Fim</label>
+            <input type="date" id="filtroDataFim" onchange="gerarRelatorio()" />
+          </div>
+        </div>
+
+        <div id="relatorioContainer"></div>
+
+        <h3>Histórico Detalhado por Produto</h3>
+        <div class="input-row">
+          <div class="form-group">
+            <label for="selectProdutoHistorico">Selecione um Produto</label>
+            <select id="selectProdutoHistorico" onchange="gerarHistoricoProduto()" class="full-width"></select>
+          </div>
+        </div>
+        <div id="historicoProdutoContainer" style="margin-top:1rem;"></div>
+      </div>
+    </div>
+
+    <div id="gerenciar" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2>Gerenciar Produtos</h2>
+          <button class="btn-primary" onclick="abrirModalEditarProduto(null)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+            </svg>
+            Adicionar Produto
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table id="tabelaProdutos">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Preço Compra (R$)</th>
+                <th>Preço Venda (R$)</th>
+                <th>Qtd Inicial</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Os produtos serão inseridos aqui via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="backup" class="tab-content">
+      <div class="card">
+        <h2>Backup e Restauração de Dados</h2>
+        <p>Faça backup de todos os dados do sistema ou restaure de um backup anterior.</p>
+        
+        <div class="input-row">
+          <button class="btn-primary" onclick="exportarDados()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+              <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+            </svg>
+            Exportar Dados
+          </button>
+          
+          <label for="importarArquivo" class="file-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM9 5.5V7h1.5a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0V8H6.5a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 1 0z"/>
+            </svg>
+            Importar Dados
+            <input type="file" id="importarArquivo" class="file-input" accept=".json" onchange="importarDados(event)" />
+          </label>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem;">
+          <h3>Limpar Dados</h3>
+          <p>Remova todos os dados do sistema. Esta ação não pode ser desfeita.</p>
+          <button class="btn-danger" onclick="limparTodosDados()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+              <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+            </svg>
+            Limpar Todos os Dados
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para edição de produto -->
+    <div id="modalProduto" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalProdutoTitulo">Adicionar Novo Produto</h3>
+          <button class="close-modal" onclick="fecharModal()">&times;</button>
+        </div>
+        <div class="input-row">
+          <div class="form-group">
+            <label for="modalProdutoNome">Nome do Produto</label>
+            <input type="text" id="modalProdutoNome" placeholder="Ex: Arroz 5kg" />
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="form-group">
+            <label for="modalProdutoPrecoCompra">Preço de Compra (R$)</label>
+            <input type="number" id="modalProdutoPrecoCompra" placeholder="0.00" step="0.01" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="modalProdutoPrecoVenda">Preço de Venda (R$)</label>
+            <input type="number" id="modalProdutoPrecoVenda" placeholder="0.00" step="0.01" min="0" />
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="form-group">
+            <label for="modalProdutoQtdInicial">Quantidade Inicial</label>
+            <input type="number" id="modalProdutoQtdInicial" placeholder="0" min="0" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-danger" onclick="fecharModal()">Cancelar</button>
+          <button class="btn-primary" onclick="salvarProdutoModal()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+    let semanas = JSON.parse(localStorage.getItem("semanas")) || [];
+    let produtoEditando = null;
+
+    // Referências DOM
+    const cadastroCard = document.getElementById("cadastroProdutoCard");
+    const registroCard = document.getElementById("registroSemanaCard");
+    const relatorioCard = document.getElementById("relatorioCard");
+    const selectSemana = document.getElementById("selectSemana");
+    const filtroProduto = document.getElementById("filtroProduto");
+    const filtroSemana = document.getElementById("filtroSemana");
+    const estoqueSemanaTableBody = document.querySelector("#estoqueSemanaTable tbody");
+    const relatorioContainer = document.getElementById("relatorioContainer");
+    const alertaVariacao = document.getElementById("alertaVariacao");
+    const selectProdutoHistorico = document.getElementById("selectProdutoHistorico");
+    const historicoProdutoContainer = document.getElementById("historicoProdutoContainer");
+    const tabelaProdutosBody = document.querySelector("#tabelaProdutos tbody");
+    const modalProduto = document.getElementById("modalProduto");
+    const filtroDataInicio = document.getElementById("filtroDataInicio");
+    const filtroDataFim = document.getElementById("filtroDataFim");
+
+    // Configurar datas padrão para filtros
+    const hoje = new Date();
+    const primeiraDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    
+    filtroDataInicio.valueAsDate = primeiraDiaMes;
+    filtroDataFim.valueAsDate = ultimoDiaMes;
+
+    function salvarDados() {
+      localStorage.setItem("produtos", JSON.stringify(produtos));
+      localStorage.setItem("semanas", JSON.stringify(semanas));
+    }
+
+    // Sistema de abas
+    function openTab(tabName) {
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => tab.classList.remove('active'));
+      
+      const tabButtons = document.querySelectorAll('.tab');
+      tabButtons.forEach(button => button.classList.remove('active'));
+      
+      document.getElementById(tabName).classList.add('active');
+      document.querySelector(`.tab[onclick="openTab('${tabName}')"]`).classList.add('active');
+      
+      // Atualizar a interface quando mudar de aba
+      if(tabName === 'relatorio') {
+        gerarRelatorio();
+      } else if(tabName === 'gerenciar') {
+        carregarTabelaProdutos();
+      }
+    }
+
+    // Cadastro produto
+    function cadastrarProduto() {
+      const nome = document.getElementById("produtoNome").value.trim();
+      const precoCompra = parseFloat(document.getElementById("produtoPrecoCompra").value);
+      const precoVenda = parseFloat(document.getElementById("produtoPrecoVenda").value);
+      const qtdInicial = parseInt(document.getElementById("produtoQtdInicial").value);
+
+      if(!nome || isNaN(precoCompra) || isNaN(precoVenda) || isNaN(qtdInicial)) {
+        mostrarNotificacao("Preencha todos os campos corretamente!", "danger");
+        return;
+      }
+
+      if(precoVenda < precoCompra) {
+        mostrarNotificacao("O preço de venda não pode ser menor que o preço de compra!", "danger");
+        return;
+      }
+
+      produtos.push({
+        id: Date.now(),
+        nome,
+        precoCompra,
+        precoVenda,
+        qtdInicial
+      });
+      salvarDados();
+      limparCadastro();
+      carregarInterface();
+      openTab('gerenciar');
+      mostrarNotificacao(`Produto "${nome}" cadastrado com sucesso!`, "success");
+    }
+
+    function limparCadastro() {
+      document.getElementById("produtoNome").value = "";
+      document.getElementById("produtoPrecoCompra").value = "";
+      document.getElementById("produtoPrecoVenda").value = "";
+      document.getElementById("produtoQtdInicial").value = "";
+    }
+
+    // Inicializar interface
+    function carregarInterface() {
+      if(produtos.length === 0) {
+        document.getElementById('registro').style.display = 'none';
+        document.getElementById('relatorio').style.display = 'none';
+      } else {
+        document.getElementById('registro').style.display = 'block';
+        document.getElementById('relatorio').style.display = 'block';
+        carregarSemanas();
+        carregarEstoqueSemana();
+        carregarFiltros();
+        carregarProdutosHistorico();
+        gerarRelatorio();
+        carregarTabelaProdutos();
+      }
+    }
+
+    // Semanas
+    function carregarSemanas() {
+      selectSemana.innerHTML = "";
+      semanas.forEach((semana, i) => {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = semana.nome;
+        selectSemana.appendChild(option);
+      });
+      if(semanas.length === 0) {
+        adicionarSemana();
+      }
+      // Seleciona última semana por padrão
+      selectSemana.value = semanas.length - 1;
+    }
+
+    function adicionarSemana() {
+      const novaSemanaNum = semanas.length + 1;
+      const nomeSemana = `Semana ${novaSemanaNum}`;
+      semanas.push({ nome: nomeSemana, estoque: [], data: new Date().toISOString() });
+      salvarDados();
+      carregarSemanas();
+      carregarEstoqueSemana();
+      carregarFiltros();
+      gerarRelatorio();
+      mostrarNotificacao(`Nova semana "${nomeSemana}" criada com sucesso!`, "success");
+    }
+
+    function removerSemana() {
+      if(semanas.length === 0) {
+        mostrarNotificacao("Nenhuma semana para remover.", "warning");
+        return;
+      }
+      
+      const semanaIndex = parseInt(selectSemana.value);
+      if(isNaN(semanaIndex)) {
+        mostrarNotificacao("Selecione uma semana para remover.", "warning");
+        return;
+      }
+      
+      if(confirm(`Tem certeza que deseja remover ${semanas[semanaIndex].nome}? Essa ação não pode ser desfeita.`)) {
+        const semanaRemovida = semanas[semanaIndex].nome;
+        semanas.splice(semanaIndex, 1);
+        salvarDados();
+        carregarSemanas();
+        carregarEstoqueSemana();
+        carregarFiltros();
+        gerarRelatorio();
+        mostrarNotificacao(`Semana "${semanaRemovida}" removida com sucesso!`, "success");
+      }
+    }
+
+    // Estoque semanal
+    function carregarEstoqueSemana() {
+      const semanaIndex = parseInt(selectSemana.value);
+      if(isNaN(semanaIndex)) return;
+
+      estoqueSemanaTableBody.innerHTML = "";
+
+      const estoqueSemana = semanas[semanaIndex].estoque;
+      produtos.forEach(produto => {
+        // Procurar qtd da semana, ou usar qtd inicial na 1a semana
+        let qtdEncontrada = null;
+        if(estoqueSemana.length > 0) {
+          const itemSemana = estoqueSemana.find(i => i.produtoId === produto.id);
+          qtdEncontrada = itemSemana ? itemSemana.quantidade : 0;
+        } else if(semanaIndex === 0) {
+          qtdEncontrada = produto.qtdInicial;
+        } else {
+          qtdEncontrada = 0;
+        }
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td data-label="Produto">${produto.nome}</td>
+          <td data-label="Quantidade Encontrada"><input type="number" class="small-input" min="0" value="${qtdEncontrada !== null ? qtdEncontrada : 0}" data-produto-id="${produto.id}"></td>
+        `;
+        estoqueSemanaTableBody.appendChild(tr);
+      });
+      alertaVariacao.style.display = "none";
+    }
+
+    selectSemana.addEventListener("change", () => {
+      carregarEstoqueSemana();
+      gerarRelatorio();
+    });
+
+    // Salvar estoque da semana com alerta de variação brusca
+    function salvarEstoqueSemana() {
+      const semanaIndex = parseInt(selectSemana.value);
+      if(isNaN(semanaIndex)) {
+        mostrarNotificacao("Selecione uma semana.", "warning");
+        return;
+      }
+
+      const inputs = estoqueSemanaTableBody.querySelectorAll("input");
+      const novaSemanaEstoque = [];
+      let alertas = [];
+
+      inputs.forEach(input => {
+        const produtoId = parseInt(input.dataset.produtoId);
+        const qtd = parseInt(input.value);
+        if(isNaN(qtd) || qtd < 0) {
+          mostrarNotificacao("Quantidade inválida para algum produto", "danger");
+          throw new Error("Quantidade inválida");
+        }
+        novaSemanaEstoque.push({ produtoId, quantidade: qtd });
+      });
+
+      // Verificar variação brusca (ex: > 50% diferença comparado semana anterior)
+      if(semanaIndex > 0) {
+        const estoqueAnterior = semanas[semanaIndex-1].estoque;
+        novaSemanaEstoque.forEach(itemAtual => {
+          const itemAnterior = estoqueAnterior.find(i => i.produtoId === itemAtual.produtoId);
+          const qtdAnterior = itemAnterior ? itemAnterior.quantidade : 0;
+          const qtdAtual = itemAtual.quantidade;
+          if(qtdAnterior > 0) {
+            const diff = Math.abs(qtdAtual - qtdAnterior) / qtdAnterior;
+            if(diff > 0.5) {
+              const prod = produtos.find(p => p.id === itemAtual.produtoId);
+              alertas.push(`Produto "${prod.nome}" teve variação > 50% (de ${qtdAnterior} para ${qtdAtual})`);
+            }
+          }
+        });
+      }
+
+      semanas[semanaIndex].estoque = novaSemanaEstoque;
+      salvarDados();
+      mostrarNotificacao(`Estoque da semana "${semanas[semanaIndex].nome}" salvo com sucesso!`, "success");
+      
+      if(alertas.length) {
+        alertaVariacao.innerHTML = '<strong>Atenção:</strong> ' + alertas.join("<br>");
+        alertaVariacao.style.display = "block";
+      } else {
+        alertaVariacao.style.display = "none";
+      }
+      gerarRelatorio();
+    }
+
+    // Relatório e filtros
+    function carregarFiltros() {
+      // Filtrar semanas
+      filtroSemana.innerHTML = '<option value="todas">Todas as Semanas</option>';
+      semanas.forEach((semana,i) => {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = semana.nome;
+        filtroSemana.appendChild(opt);
+      });
+    }
+
+    function gerarRelatorio() {
+      const filtroProd = filtroProduto.value.trim().toLowerCase();
+      const filtroSem = filtroSemana.value;
+      const dataInicio = filtroDataInicio.value ? new Date(filtroDataInicio.value) : null;
+      const dataFim = filtroDataFim.value ? new Date(filtroDataFim.value) : null;
+
+      if(semanas.length === 0) {
+        relatorioContainer.innerHTML = "<p>Nenhum dado para exibir.</p>";
+        return;
+      }
+
+      let html = "";
+      let totalGeralVendido = 0;
+      let totalGeralLucro = 0;
+      let totalGeralGasto = 0;
+
+      semanas.forEach((semana, i) => {
+        if(filtroSem !== "todas" && filtroSem != i) return;
+        
+        // Filtrar por data se aplicável
+        if(dataInicio && dataFim) {
+          const dataSemana = semana.data ? new Date(semana.data) : new Date();
+          if(dataSemana < dataInicio || dataSemana > dataFim) return;
+        }
+
+        const estoqueAtual = semana.estoque;
+        const estoqueAnterior = i > 0 ? semanas[i-1].estoque : null;
+        const resumo = gerarResumoSemana(estoqueAtual, estoqueAnterior, filtroProd);
+        
+        if(resumo) {
+          totalGeralVendido += resumo.totalVendido;
+          totalGeralLucro += resumo.totalLucro;
+          totalGeralGasto += resumo.totalGasto;
+          
+          html += `<h3>${semana.nome}</h3>`;
+          if(semana.data) {
+            html += `<p><small>${new Date(semana.data).toLocaleDateString('pt-BR')}</small></p>`;
+          }
+          html += resumo.html;
+        }
+      });
+
+      if(!html) {
+        relatorioContainer.innerHTML = "<p>Nenhum dado para os filtros aplicados.</p>";
+        return;
+      }
+
+      // Adicionar resumo geral se mostrando múltiplas semanas
+      if(filtroSem === "todas" && semanas.length > 1) {
+        html = `<div class="stats-container">
+          <div class="stat-card">
+            <h3>Total Geral Vendido</h3>
+            <p>R$ ${totalGeralVendido.toFixed(2)}</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Geral Lucro</h3>
+            <p>R$ ${totalGeralLucro.toFixed(2)}</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Geral Gasto</h3>
+            <p>R$ ${totalGeralGasto.toFixed(2)}</p>
+          </div>
+        </div>` + html;
+      }
+
+      relatorioContainer.innerHTML = html;
+    }
+
+    // Gera resumo da semana, filtrando produtos se precisar
+    function gerarResumoSemana(estoqueAtual, estoqueAnterior, filtroProd = "") {
+      if(!estoqueAtual || estoqueAtual.length === 0) {
+        return null;
+      }
+
+      const mapProdutos = {};
+      produtos.forEach(p => mapProdutos[p.id] = p);
+
+      let totalVendido = 0;
+      let totalLucro = 0;
+      let totalGasto = 0;
+      let maiorQtd = 0;
+      let produtoMaisVendido = null;
+
+      let linhas = "<table><thead><tr><th>Produto</th><th>Qtd Vendida</th><th>Valor Vendido (R$)</th><th>Lucro (R$)</th><th>Gasto (R$)</th></tr></thead><tbody>";
+
+      let temAlgum = false;
+
+      estoqueAtual.forEach(itemAtual => {
+        const produto = mapProdutos[itemAtual.produtoId];
+        if(!produto) return;
+
+        if(filtroProd && !produto.nome.toLowerCase().includes(filtroProd)) return;
+
+        let qtdAnterior = 0;
+        if(estoqueAnterior) {
+          const itemAnterior = estoqueAnterior.find(i => i.produtoId === itemAtual.produtoId);
+          qtdAnterior = itemAnterior ? itemAnterior.quantidade : 0;
+        } else {
+          qtdAnterior = produto.qtdInicial;
+        }
+
+        let vendido = qtdAnterior - itemAtual.quantidade;
+        if(vendido < 0) vendido = 0;
+
+        const valorVendido = vendido * produto.precoVenda;
+        const lucro = vendido * (produto.precoVenda - produto.precoCompra);
+        const gasto = vendido * produto.precoCompra;
+
+        totalVendido += valorVendido;
+        totalLucro += lucro;
+        totalGasto += gasto;
+
+        if(vendido > maiorQtd) {
+          maiorQtd = vendido;
+          produtoMaisVendido = produto;
+        }
+
+        linhas += `<tr>
+          <td>${produto.nome}</td>
+          <td>${vendido}</td>
+          <td>${valorVendido.toFixed(2)}</td>
+          <td>${lucro.toFixed(2)}</td>
+          <td>${gasto.toFixed(2)}</td>
+        </tr>`;
+
+        temAlgum = true;
+      });
+
+      linhas += "</tbody></table>";
+
+      if(!temAlgum) return null;
+
+      // Estatísticas da semana
+      const statsHtml = `<div class="stats-container">
+        <div class="stat-card">
+          <h3>Total Vendido</h3>
+          <p>R$ ${totalVendido.toFixed(2)}</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Lucro</h3>
+          <p>R$ ${totalLucro.toFixed(2)}</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Gasto</h3>
+          <p>R$ ${totalGasto.toFixed(2)}</p>
+        </div>
+        <div class="stat-card">
+          <h3>Produto Mais Vendido</h3>
+          <p>${produtoMaisVendido ? produtoMaisVendido.nome : "Nenhum"}</p>
+        </div>
+      </div>`;
+
+      return {
+        html: statsHtml + linhas,
+        totalVendido,
+        totalLucro,
+        totalGasto
+      };
+    }
+
+    function imprimirRelatorio() {
+      window.print();
+    }
+
+    // Histórico detalhado por produto
+    function carregarProdutosHistorico() {
+      selectProdutoHistorico.innerHTML = "";
+      produtos.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.id;
+        option.textContent = p.nome;
+        selectProdutoHistorico.appendChild(option);
+      });
+      if(produtos.length) {
+        selectProdutoHistorico.value = produtos[0].id;
+        gerarHistoricoProduto();
+      }
+    }
+
+    function gerarHistoricoProduto() {
+      const produtoId = parseInt(selectProdutoHistorico.value);
+      if(isNaN(produtoId)) {
+        historicoProdutoContainer.innerHTML = "<p>Selecione um produto.</p>";
+        return;
+      }
+
+      const produto = produtos.find(p => p.id === produtoId);
+      if(!produto) return;
+
+      let totalVendido = 0;
+      let totalLucro = 0;
+      let totalGasto = 0;
+
+      let html = `<div class="stats-container">
+        <div class="stat-card">
+          <h3>Preço Compra</h3>
+          <p>R$ ${produto.precoCompra.toFixed(2)}</p>
+        </div>
+        <div class="stat-card">
+          <h3>Preço Venda</h3>
+          <p>R$ ${produto.precoVenda.toFixed(2)}</p>
+        </div>
+        <div class="stat-card">
+          <h3>Margem</h3>
+          <p>${((produto.precoVenda - produto.precoCompra) / produto.precoCompra * 100).toFixed(1)}%</p>
+        </div>
+      </div>`;
+
+      html += `<table><thead><tr>
+        <th>Semana</th>
+        <th>Qtd Estoque</th>
+        <th>Qtd Vendida</th>
+        <th>Valor Vendido (R$)</th>
+        <th>Lucro (R$)</th>
+        <th>Gasto (R$)</th>
+      </tr></thead><tbody>`;
+
+      for(let i = 0; i < semanas.length; i++) {
+        const semana = semanas[i];
+        const estoqueAtual = semana.estoque;
+        const estoqueAnterior = i > 0 ? semanas[i-1].estoque : null;
+
+        const itemAtual = estoqueAtual.find(e => e.produtoId === produtoId);
+        const qtdAtual = itemAtual ? itemAtual.quantidade : 0;
+
+        let qtdAnterior = 0;
+        if(estoqueAnterior) {
+          const itemAnterior = estoqueAnterior.find(e => e.produtoId === produtoId);
+          qtdAnterior = itemAnterior ? itemAnterior.quantidade : 0;
+        } else {
+          qtdAnterior = produto.qtdInicial;
+        }
+
+        let vendido = qtdAnterior - qtdAtual;
+        if(vendido < 0) vendido = 0;
+        const valorVendido = vendido * produto.precoVenda;
+        const lucro = vendido * (produto.precoVenda - produto.precoCompra);
+        const gasto = vendido * produto.precoCompra;
+
+        totalVendido += vendido;
+        totalLucro += lucro;
+        totalGasto += gasto;
+
+        html += `<tr>
+          <td>${semana.nome}</td>
+          <td>${qtdAtual}</td>
+          <td>${vendido}</td>
+          <td>${valorVendido.toFixed(2)}</td>
+          <td>${lucro.toFixed(2)}</td>
+          <td>${gasto.toFixed(2)}</td>
+        </tr>`;
+      }
+
+      // Adicionar totais
+      html += `<tr style="font-weight: bold; background-color: #f8f9fa;">
+        <td>Total</td>
+        <td>-</td>
+        <td>${totalVendido}</td>
+        <td>R$ ${(totalVendido * produto.precoVenda).toFixed(2)}</td>
+        <td>R$ ${totalLucro.toFixed(2)}</td>
+        <td>R$ ${totalGasto.toFixed(2)}</td>
+      </tr>`;
+
+      html += "</tbody></table>";
+      historicoProdutoContainer.innerHTML = html;
+    }
+
+    selectProdutoHistorico.addEventListener("change", gerarHistoricoProduto);
+
+    // Gerenciar produtos (listagem com editar e remover)
+    function carregarTabelaProdutos() {
+      const tabelaProdutosBody = document.querySelector("#tabelaProdutos tbody");
+      tabelaProdutosBody.innerHTML = "";
+      
+      if (produtos.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="5" class="text-center">Nenhum produto cadastrado</td>`;
+        tabelaProdutosBody.appendChild(tr);
+        return;
+      }
+      
+      produtos.forEach((produto, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td data-label="Nome">${produto.nome}</td>
+          <td data-label="Preço Compra">R$ ${produto.precoCompra.toFixed(2)}</td>
+          <td data-label="Preço Venda">R$ ${produto.precoVenda.toFixed(2)}</td>
+          <td data-label="Qtd Inicial">${produto.qtdInicial}</td>
+          <td data-label="Ações">
+            <div class="action-buttons">
+              <button class="btn-primary btn-sm" onclick="abrirModalEditarProduto(${index})" title="Editar produto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                </svg>
+                Editar
+              </button>
+              <button class="btn-danger btn-sm" onclick="removerProduto(${index})" title="Remover produto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                  <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                </svg>
+                Remover
+              </button>
+            </div>
+          </td>
+        `;
+        tabelaProdutosBody.appendChild(tr);
+      });
+    }
+
+    // Modal de edição de produto
+    function abrirModalEditarProduto(index) {
+      const modal = document.getElementById('modalProduto');
+      const titulo = document.getElementById('modalProdutoTitulo');
+      
+      if(index === null) {
+        // Novo produto
+        produtoEditando = null;
+        titulo.textContent = 'Adicionar Novo Produto';
+        document.getElementById('modalProdutoNome').value = '';
+        document.getElementById('modalProdutoPrecoCompra').value = '';
+        document.getElementById('modalProdutoPrecoVenda').value = '';
+        document.getElementById('modalProdutoQtdInicial').value = '';
+      } else {
+        // Editar produto existente
+        produtoEditando = index;
+        const produto = produtos[index];
+        titulo.textContent = `Editar Produto: ${produto.nome}`;
+        document.getElementById('modalProdutoNome').value = produto.nome;
+        document.getElementById('modalProdutoPrecoCompra').value = produto.precoCompra;
+        document.getElementById('modalProdutoPrecoVenda').value = produto.precoVenda;
+        document.getElementById('modalProdutoQtdInicial').value = produto.qtdInicial;
+      }
+      
+      modal.style.display = 'flex';
+    }
+
+    function fecharModal() {
+      document.getElementById('modalProduto').style.display = 'none';
+    }
+
+    function salvarProdutoModal() {
+      const nome = document.getElementById('modalProdutoNome').value.trim();
+      const precoCompra = parseFloat(document.getElementById('modalProdutoPrecoCompra').value);
+      const precoVenda = parseFloat(document.getElementById('modalProdutoPrecoVenda').value);
+      const qtdInicial = parseInt(document.getElementById('modalProdutoQtdInicial').value);
+
+      if(!nome || isNaN(precoCompra) || isNaN(precoVenda) || isNaN(qtdInicial)) {
+        mostrarNotificacao("Preencha todos os campos corretamente!", "danger");
+        return;
+      }
+
+      if(precoVenda < precoCompra) {
+        mostrarNotificacao("O preço de venda não pode ser menor que o preço de compra!", "danger");
+        return;
+      }
+
+      if(produtoEditando === null) {
+        // Novo produto
+        produtos.push({
+          id: Date.now(),
+          nome,
+          precoCompra,
+          precoVenda,
+          qtdInicial
+        });
+        mostrarNotificacao(`Produto "${nome}" cadastrado com sucesso!`, "success");
+      } else {
+        // Editar produto existente
+        produtos[produtoEditando] = {
+          ...produtos[produtoEditando],
+          nome,
+          precoCompra,
+          precoVenda,
+          qtdInicial
+        };
+        mostrarNotificacao(`Produto "${nome}" atualizado com sucesso!`, "success");
+      }
+
+      salvarDados();
+      carregarInterface();
+      fecharModal();
+    }
+
+    // Remover produto
+    function removerProduto(i) {
+      if(confirm(`Tem certeza que deseja remover o produto "${produtos[i].nome}"? Essa ação removerá todos os dados relacionados a ele.`)) {
+        const produtoRemovido = produtos[i];
+        produtos.splice(i, 1);
+
+        // Remover dados desse produto nas semanas
+        semanas.forEach(sem => {
+          sem.estoque = sem.estoque.filter(item => item.produtoId !== produtoRemovido.id);
+        });
+
+        salvarDados();
+        carregarInterface();
+        mostrarNotificacao(`Produto "${produtoRemovido.nome}" removido com sucesso!`, "success");
+      }
+    }
+
+    // Exportar dados JSON
+    function exportarDados() {
+      const data = {
+        produtos,
+        semanas,
+        exportadoEm: new Date().toISOString(),
+        versao: '1.0'
+      };
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `controle-estoque-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      mostrarNotificacao("Dados exportados com sucesso!", "success");
+    }
+
+    // Importar dados JSON
+    function importarDados(event) {
+      const file = event.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if(data.produtos && data.semanas) {
+            if(confirm("Isso substituirá os dados atuais. Deseja continuar?")) {
+              produtos = data.produtos;
+              semanas = data.semanas;
+              salvarDados();
+              carregarInterface();
+              mostrarNotificacao("Dados importados com sucesso!", "success");
+            }
+          } else {
+            mostrarNotificacao("Arquivo inválido - formato incorreto", "danger");
+          }
+        } catch (e) {
+          mostrarNotificacao("Erro ao ler arquivo: " + e.message, "danger");
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    // Limpar todos os dados
+    function limparTodosDados() {
+      if(confirm("Tem certeza que deseja limpar TODOS os dados? Essa ação não pode ser desfeita e removerá todos os produtos e registros de semanas.")) {
+        produtos = [];
+        semanas = [];
+        salvarDados();
+        carregarInterface();
+        mostrarNotificacao("Todos os dados foram removidos com sucesso!", "success");
+      }
+    }
+
+    // Mostrar notificação
+    function mostrarNotificacao(mensagem, tipo = "success") {
+      const notification = document.createElement('div');
+      notification.className = `alert alert-${tipo}`;
+      notification.innerHTML = mensagem;
+      document.querySelector('.container').prepend(notification);
+      setTimeout(() => notification.remove(), 5000);
+    }
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarInterface();
+      
+      // Verificar se é a primeira execução
+      if(localStorage.getItem('firstRun') === null) {
+        mostrarNotificacao("<strong>Bem-vindo ao Controle de Estoque!</strong> Comece cadastrando seus produtos.", "success");
+        localStorage.setItem('firstRun', 'false');
+      }
+    });
+
+    // Fechar modal ao clicar fora
+    window.addEventListener('click', (event) => {
+      const modal = document.getElementById('modalProduto');
+      if(event.target === modal) {
+        fecharModal();
+      }
+    });
+
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log('Service Worker registrado!'));
+  }
+  </script>
+</body>
+</html>
